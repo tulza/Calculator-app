@@ -1,10 +1,9 @@
 import { ThemeUtils } from "@/entities/ThemeUtils";
 import clsx from "clsx";
-import { motion } from "framer-motion";
+import { calcLength, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const CalculatorComponent = () => {
-  ThemeUtils.SetTheme("1");
   return (
     <div className="flex h-[100vh] w-[100vw] items-center justify-center text-[32px]">
       <div className="flex h-min w-min min-w-0 flex-col">
@@ -74,55 +73,84 @@ const CalcHeader = ({ className }: { className?: string }) => {
 };
 
 const CalculatorBody = () => {
-  const [Calc, setCalc] = useState<string[]>(["399981", "+", "300"]);
-  const [DisplayedValue, setDisplayed] = useState<string[]>("");
+  const [Value, setValue] = useState("23434,+,2,+,");
+  const [DisplayedValue, setDisplayed] = useState([]);
+  const [Error, setError] = useState("");
   // yoinked from reddit
   function numberWithCommas(x: number) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
   const HandleAddNumber = (val: string) => {
-    const sum = Calc[Calc.length - 1] + val;
-    setCalc([...Calc.slice(0, Calc.length - 1), sum]);
-  };
-
-  const HandleAddOperator = (val: string) => {
-    setCalc([Calc[Calc.length - 1] + val]);
+    if (val == "+" || val == "-" || val == "x" || val == "/") {
+      if (Value[Value.length - 1] == ",") return;
+      setValue(Value + `,${val},`);
+      return;
+    }
+    if (
+      (Value[Value.length - 1] === "," ||
+        Value[Value.length - 1] === undefined) &&
+      val == "0"
+    ) {
+      return;
+    } else {
+      setValue(Value + val);
+    }
   };
 
   const HandleDelete = () => {
-    const values = Calc;
-
-    setCalc([Calc[Calc.length - 1]]);
+    if (Value[Value.length - 1] == ",")
+      setValue(Value.slice(0, Value.length - 3));
+    else {
+      setValue(Value.slice(0, Value.length - 1));
+    }
   };
 
   const HandleReset = () => {
-    setCalc([""]);
+    setValue("");
+  };
+
+  const HandleEqual = () => {
+    try {
+      const equation = Value.split(",").join("").replace("x", "*");
+      const evaluate = eval(equation);
+      setValue(String(evaluate));
+    } catch (e) {
+      setError(e.name);
+      setTimeout(() => {
+        setError("");
+      }, 1000);
+    }
   };
 
   const HandleDisplayed = () => {
-    const displayedValue = Calc.map((val) => {
+    const displayedValue = Value.split(",").map((val) => {
+      console.log(val);
+      if (val.length == 0) return;
       if (isNaN(Number(val))) return val;
       const newVal = numberWithCommas(Number(val));
       return newVal;
     });
+    console.log(Value, displayedValue);
     if (displayedValue.length == 1) {
       if (displayedValue[0] === "0") {
-        console.log("wa");
-        setDisplayed([""]);
+        setDisplayed([]);
+        return;
       }
-    } else {
-      setDisplayed(displayedValue);
     }
+    setDisplayed(displayedValue);
   };
 
   useEffect(() => {
     HandleDisplayed();
-  }, [Calc]);
+  }, [Value]);
+  useEffect(() => {
+    console.log(DisplayedValue);
+  }, [DisplayedValue]);
   return (
     <>
-      <div className="mb-6 flex h-[130px] w-[540px] items-center justify-end rounded-lg bg-Screen pr-8 text-[50px]">
-        {DisplayedValue}
+      <div className="relative mb-6 flex h-[130px] w-[540px] items-center justify-end rounded-lg bg-Screen pr-8 text-[50px]">
+        {Error ? Error : DisplayedValue}
       </div>
       <div className="grid h-[480px] w-[540px] select-none rounded-lg bg-Keypad p-8">
         <div className="grid h-full justify-between [align-content:_space-between] [grid-template-columns:_repeat(4,_100px)]">
@@ -149,7 +177,7 @@ const CalculatorBody = () => {
             type="Function"
           />
           <Button
-            OnClick={HandleAddNumber}
+            OnClick={HandleEqual}
             columnSpan={2}
             keyVal="="
             type="Equal"
@@ -211,9 +239,7 @@ const Button = ({
           onClick={() => {
             if (type == "Normal") {
               OnClick(keyVal);
-            } else if (type == "Function") {
-              OnClick();
-            } else if (type == "Equal") {
+            } else if (type == "Function" || type == "Equal") {
               OnClick();
             }
           }}
