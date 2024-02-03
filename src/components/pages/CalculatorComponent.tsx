@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const CalculatorComponent = () => {
   return (
     <div className="flex h-[100vh] w-[100vw] items-center justify-center text-[32px]">
-      <div className="flex h-min w-min min-w-0 flex-col">
+      <div className="flex h-min w-[330px] min-w-0 flex-col md:w-[540px]">
         <CalcHeader className="mb-[30px] select-none" />
         <CalculatorBody />
       </div>
@@ -34,7 +34,7 @@ const CalcHeader = ({ className }: { className?: string }) => {
   return (
     <div
       className={clsx(
-        "flex h-[50px] w-[540px] items-end justify-between",
+        "flex h-[50px] w-full items-end justify-between",
         `${className}`,
       )}
     >
@@ -148,11 +148,11 @@ const CalculatorBody = () => {
   }, [DisplayedValue]);
   return (
     <>
-      <div className="relative mb-6 flex h-[130px] w-[540px] items-center justify-end overflow-hidden rounded-lg bg-Screen pr-8 text-[50px]">
+      <div className="relative mb-6 flex h-[90px] w-full items-center justify-end overflow-hidden rounded-lg bg-Screen pr-8 text-[40px] md:h-[130px] md:text-[50px]">
         {Error ? Error : DisplayedValue}
       </div>
-      <div className="grid h-[480px] w-[540px] select-none rounded-lg bg-Keypad p-8">
-        <div className="grid h-full justify-between [align-content:_space-between] [grid-template-columns:_repeat(4,_100px)]">
+      <div className="grid h-[420px] w-full select-none rounded-lg bg-Keypad p-6 md:h-[480px] md:p-8">
+        <div className="grid h-full justify-between [align-content:_space-between] [grid-template-columns:_repeat(4,_60px)] md:[grid-template-columns:_repeat(4,_100px)]">
           <Button OnClick={HandleAddNumber} keyVal="7" />
           <Button OnClick={HandleAddNumber} keyVal="8" />
           <Button OnClick={HandleAddNumber} keyVal="9" />
@@ -216,9 +216,9 @@ const Button = ({
         <div
           className={clsx(
             "pointer-events-none absolute z-10 flex h-[60px] w-full items-center justify-center rounded-lg",
-            type == "Normal" && "text-KeyText",
-            type == "Function" && " text-FuncKey",
-            type == "Equal" && "text-EqualText",
+            type == "Normal" && "md: text-KeyText",
+            type == "Function" && "text-[20px] text-FuncKey md:text-[32px] ",
+            type == "Equal" && "text-[20px] text-EqualText md:text-[32px] ",
           )}
         >
           {keyVal}
