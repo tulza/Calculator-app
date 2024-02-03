@@ -1,6 +1,6 @@
 import { ThemeUtils } from "@/entities/ThemeUtils";
 import clsx from "clsx";
-import { calcLength, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const CalculatorComponent = () => {
@@ -73,8 +73,8 @@ const CalcHeader = ({ className }: { className?: string }) => {
 };
 
 const CalculatorBody = () => {
-  const [Value, setValue] = useState("23434,+,2,+,");
-  const [DisplayedValue, setDisplayed] = useState([]);
+  const [Value, setValue] = useState("399981");
+  const [DisplayedValue, setDisplayed] = useState<any>([]);
   const [Error, setError] = useState("");
   // yoinked from reddit
   function numberWithCommas(x: number) {
@@ -113,9 +113,9 @@ const CalculatorBody = () => {
   const HandleEqual = () => {
     try {
       const equation = Value.split(",").join("").replace("x", "*");
-      const evaluate = eval(equation);
+      const evaluate = eval(equation).toFixed(3);
       setValue(String(evaluate));
-    } catch (e) {
+    } catch (e: any) {
       setError(e.name);
       setTimeout(() => {
         setError("");
@@ -131,7 +131,6 @@ const CalculatorBody = () => {
       const newVal = numberWithCommas(Number(val));
       return newVal;
     });
-    console.log(Value, displayedValue);
     if (displayedValue.length == 1) {
       if (displayedValue[0] === "0") {
         setDisplayed([]);
@@ -149,7 +148,7 @@ const CalculatorBody = () => {
   }, [DisplayedValue]);
   return (
     <>
-      <div className="relative mb-6 flex h-[130px] w-[540px] items-center justify-end rounded-lg bg-Screen pr-8 text-[50px]">
+      <div className="relative mb-6 flex h-[130px] w-[540px] items-center justify-end overflow-hidden rounded-lg bg-Screen pr-8 text-[50px]">
         {Error ? Error : DisplayedValue}
       </div>
       <div className="grid h-[480px] w-[540px] select-none rounded-lg bg-Keypad p-8">
