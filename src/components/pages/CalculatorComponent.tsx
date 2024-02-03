@@ -39,7 +39,7 @@ const CalcHeader = ({ className }: { className?: string }) => {
       )}
     >
       <p className="leading-[2rem]">calc</p>
-      <div className="flex items-end gap-6 text-[16px]">
+      <div className="flex items-end gap-6 text-[12px] md:text-[16px]">
         <p className="">THEME</p>
         <div className="flex flex-col">
           <div className="flex justify-evenly">
